@@ -19,90 +19,90 @@ if ($handle = opendir(getcwd())) {
 
 // for this request to get handled, you have to specify either a file or an image URL
 if (($_POST['url'] != "" || !empty($_FILES['file'])) && $_POST['source'] != "") {
-	$srcType = $_POST['source'];
-	if ($srcType == 'url') {
-		$src = $_POST['url'];
-	}
-	else {
-		$src = $_FILES['file']['tmp_name'];
-	}
+    $srcType = $_POST['source'];
+    if ($srcType == 'url') {
+        $src = $_POST['url'];
+    }
+    else {
+        $src = $_FILES['file']['tmp_name'];
+    }
     // number of real pixels for each image "pixel"
-	$pixelSize = $_POST['size'];
+    $pixelSize = $_POST['size'];
     // background color for the rectangle behind the "pixels"
     $bgColor = $_POST['bgColor'];
     // each "pixel" can either be a square or a circle
     $pixelShape = $_POST['pixelShape'];
-	$type = exif_imagetype($src);
-	$invalid = false;
-	switch($type) {
-		case IMAGETYPE_GIF:
-			$img = imagecreatefromgif($src);
-			break;
-		case IMAGETYPE_JPEG:
-			$img = imagecreatefromjpeg($src);
-			break;
-		case IMAGETYPE_PNG:
-			$img = imagecreatefrompng($src);
-			break;
-		default:
-			$invalid = true;
-	}
-	if ($pixelSize == '' || !is_numeric($pixelSize) || $pixelSize < 2 || $pixelSize > 50) {
-		$pixelSize = 2;
-	}
-	
-	if (!$invalid) {
-		$dimensions = getimagesize($src);
-		$width = $dimensions[0];
-		$height = $dimensions[1];
+    $type = exif_imagetype($src);
+    $invalid = false;
+    switch($type) {
+        case IMAGETYPE_GIF:
+            $img = imagecreatefromgif($src);
+            break;
+        case IMAGETYPE_JPEG:
+            $img = imagecreatefromjpeg($src);
+            break;
+        case IMAGETYPE_PNG:
+            $img = imagecreatefrompng($src);
+            break;
+        default:
+            $invalid = true;
+    }
+    if ($pixelSize == '' || !is_numeric($pixelSize) || $pixelSize < 2 || $pixelSize > 50) {
+        $pixelSize = 2;
+    }
+    
+    if (!$invalid) {
+        $dimensions = getimagesize($src);
+        $width = $dimensions[0];
+        $height = $dimensions[1];
         // calculate the number of "pixels" based on the image width and height
-		$px = floor($width / $pixelSize);
-		$py = floor($height / $pixelSize);
-		
-		$pixels = array();
-		
+        $px = floor($width / $pixelSize);
+        $py = floor($height / $pixelSize);
+        
+        $pixels = array();
+        
         // loop through each "pixel" which is really a square of real pixels
-		for ($i=0; $i < $py; $i++) {
-		for ($j=0; $j < $px; $j++) {
-		
-			$r = $g = $b = 0;
+        for ($i=0; $i < $py; $i++) {
+        for ($j=0; $j < $px; $j++) {
+        
+            $r = $g = $b = 0;
             // calculate the min and max real pixel coordinates for this "pixel"
-			$minx = $pixelSize * $j;
-			$miny = $pixelSize * $i;
-			$maxx = $minx + $pixelSize;
-			$maxy = $miny + $pixelSize;
-			
-			// loop through the real pixels in this "pixel" block
-			for ($x = $minx; $x < $maxx; $x++) {
-			for ($y = $miny; $y < $maxy; $y++) {
-			
+            $minx = $pixelSize * $j;
+            $miny = $pixelSize * $i;
+            $maxx = $minx + $pixelSize;
+            $maxy = $miny + $pixelSize;
+            
+            // loop through the real pixels in this "pixel" block
+            for ($x = $minx; $x < $maxx; $x++) {
+            for ($y = $miny; $y < $maxy; $y++) {
+            
                 // get the color for each pixel in the "pixel" square
-				$index = imagecolorat($img, $x, $y);
+                $index = imagecolorat($img, $x, $y);
                 // get the RGB values for this pixel color
-				$cols = imagecolorsforindex($img, $index);
+                $cols = imagecolorsforindex($img, $index);
                 // add the RGB values to the running sums for this "pixel"
-				$r += $cols['red'];
-				$g += $cols['green'];
-				$b += $cols['blue'];
-			
-			}
-			}
-		
+                $r += $cols['red'];
+                $g += $cols['green'];
+                $b += $cols['blue'];
+            
+            }
+            }
+        
             // create an array to store the output "pixel" details
-			$pixel = array();
+            $pixel = array();
             // store the coordinates for the top-left corner of this "pixel"
-			$pixel['x'] = $minx;
-			$pixel['y'] = $miny;
+            $pixel['x'] = $minx;
+            $pixel['y'] = $miny;
             // calculate the average R, G and B values based on the individual real pixels
-			$pixel['r'] = floor($r / ($pixelSize*$pixelSize));
-			$pixel['g'] = floor($g / ($pixelSize*$pixelSize));
-			$pixel['b'] = floor($b / ($pixelSize*$pixelSize));
-			$pixels[] = $pixel;
-		
-		}
-		}
-		
-		$new = imagecreatetruecolor($px*$pixelSize, $py*$pixelSize);
+            $pixel['r'] = floor($r / ($pixelSize*$pixelSize));
+            $pixel['g'] = floor($g / ($pixelSize*$pixelSize));
+            $pixel['b'] = floor($b / ($pixelSize*$pixelSize));
+            $pixels[] = $pixel;
+        
+        }
+        }
+        
+        $new = imagecreatetruecolor($px*$pixelSize, $py*$pixelSize);
         // if the background should be white, then fill the black rectangle
         if ($bgColor == "white") {
             $white = imagecolorallocate($new, 255, 255, 255);
@@ -116,26 +116,22 @@ if (($_POST['url'] != "" || !empty($_FILES['file'])) && $_POST['source'] != "") 
         if ($pixelShape == "square") {
             foreach ($pixels as $pixel) {
                 // determine the color for this "pixel" using the previously calculated averages
-        		$color = imagecolorallocate($new, $pixel['r'], $pixel['g'], $pixel['b']);
-    			imagefilledrectangle($new, $pixel['x'], $pixel['y'], $pixel['x']+$pixelSize, $pixel['y']+$pixelSize, $color);
-    		}
+                $color = imagecolorallocate($new, $pixel['r'], $pixel['g'], $pixel['b']);
+                imagefilledrectangle($new, $pixel['x'], $pixel['y'], $pixel['x']+$pixelSize, $pixel['y']+$pixelSize, $color);
+            }
         } else if ($pixelShape == "circle") {
             foreach ($pixels as $pixel) {
                 // determine the color for this "pixel" using the previously calculated averages
-        		$color = imagecolorallocate($new, $pixel['r'], $pixel['g'], $pixel['b']);
+                $color = imagecolorallocate($new, $pixel['r'], $pixel['g'], $pixel['b']);
                 imagefilledellipse($new, $pixel['x'] + $radius, $pixel['y'] + $radius, $pixelSize, $pixelSize, $color);
-    		}
+            }
         }
-		
-                $name = md5(rand(1, 99999)).".jpg";
-		imagejpeg($new, $name, 100);
-                echo "<html>
-                <body>
-                <img src='{$name}' />
-                </body>
-                </html>";
-                exit;
-	}
+        
+        $name = md5(rand(1, 99999)).".jpg";
+        imagejpeg($new, $name, 100);
+        echo "<html><body><img src='{$name}' /></body></html>";
+        exit;
+    }
 }
 
 ?>
