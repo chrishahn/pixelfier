@@ -149,10 +149,9 @@ if (($_POST['url'] != "" || !empty($_FILES['file'])) && $_POST['source'] != "") 
     .content {
         width: 500px;
         height: 350px;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        margin: -175px 0 0 -250px;
+        position: relative;
+        top: 10%;
+        margin: 0px auto;
         background: #383838;
         color: white;
         -moz-border-radius: 20px;
@@ -163,10 +162,9 @@ if (($_POST['url'] != "" || !empty($_FILES['file'])) && $_POST['source'] != "") 
     .title {
         width: 707px;
         height: 70px;
-        position: absolute;
-        left: 50%;
-        top: 20%;
-        margin: -35px 0 0 -353px;
+        position: relative;
+        top: 5%;
+        margin: 0px auto;
         background: #383838;
         -moz-border-radius: 20px;
         border-radius: 20px;
