@@ -117,7 +117,7 @@ if (($_POST['url'] != "" || !empty($_FILES['file'])) && $_POST['source'] != "") 
             foreach ($pixels as $pixel) {
                 // determine the color for this "pixel" using the previously calculated averages
                 $color = imagecolorallocate($new, $pixel['r'], $pixel['g'], $pixel['b']);
-                imagefilledrectangle($new, $pixel['x'], $pixel['y'], $pixel['x']+$pixelSize, $pixel['y']+$pixelSize, $color);
+                imagefilledrectangle($new, $pixel['x'], $pixel['y'], $pixel['x'] + $pixelSize, $pixel['y'] + $pixelSize, $color);
             }
         } else if ($pixelShape == "circle") {
             foreach ($pixels as $pixel) {
@@ -137,18 +137,22 @@ if (($_POST['url'] != "" || !empty($_FILES['file'])) && $_POST['source'] != "") 
 ?>
 
 <html>
+<head>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="/js/bootstrap.min.js"></script>
+</head>
 <style>
     body {
         background-image: url('bg.png');
     }
     
     .content {
-        width: 300px;
-        height: 200px;
+        width: 500px;
+        height: 350px;
         position: absolute;
         left: 50%;
         top: 50%;
-        margin: -100px 0 0 -150px;
+        margin: -175px 0 0 -250px;
         background: #383838;
         color: white;
         -moz-border-radius: 20px;
@@ -178,25 +182,83 @@ if (($_POST['url'] != "" || !empty($_FILES['file'])) && $_POST['source'] != "") 
         <img src="title.png" />
     </div>
     <div class="content">
-        <form action="" method="post"  enctype="multipart/form-data">
-            Image Link<br/>
-            <input type='radio' name='source' value='url'><input type="text" size="50" name="url" /><br/>
-            File Upload<br/>
-            <input type='radio' CHECKED name='source' value='file'><input type="file" name="file" size="50" /><br/>
-            Pixel Size (2-50, larger numbers work better for larger images)<br/>
-            <input type="text" size="5" name="size" /><br/>
-            Background Color:&nbsp;
-            <select name="bgColor">
-                <option value="black">Black</option>
-                <option value="white">White</option>
-            </select><br/>
-            Pixel Shape:&nbsp;
-            <select name="pixelShape">
-                <option value="square">Square</option>
-                <option value="circle">Circle</option>
-            </select><br/>
-            <input type="submit" value="Pixelize" /> (this can take several seconds)
+        <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+            <fieldset>
+            
+            <!-- Image Url -->
+            <div class="control-group">
+              <label class="control-label" for="textinput">Image URL</label>
+              <div class="controls">
+                <input id="textinput" name="url" type="text" placeholder="http://www.example.com/image.jpg" class="input-xlarge">
+              </div>
+            </div>
+            
+            <!-- Image Upload --> 
+            <div class="control-group">
+              <label class="control-label" for="filebutton">Image Upload</label>
+              <div class="controls">
+                <input id="filebutton" name="file" class="input-file" type="file">
+              </div>
+            </div>
+            
+            <!-- Source Radios -->
+            <div class="control-group">
+              <label class="control-label" for="radios">Image Source</label>
+              <div class="controls">
+                <label class="radio" for="radios-0">
+                  <input type="radio" name="source" id="radios-0" value="url" checked="checked">
+                  Image Url Specified
+                </label>
+                <label class="radio" for="radios-1">
+                  <input type="radio" name="source" id="radios-1" value="file">
+                  Image File Uploaded
+                </label>
+              </div>
+            </div>
+            
+            <!-- Pixel Size -->
+            <div class="control-group">
+              <label class="control-label" for="pixels">Pixel Size</label>
+              <div class="controls">
+                <input id="pixels" name="size" type="text" placeholder="2-50 (larger image, use larger pixels)" class="input-xlarge">
+              </div>
+            </div>
+            
+            <!-- Background Color -->
+            <div class="control-group">
+              <label class="control-label" for="color">Background Color</label>
+              <div class="controls">
+                <select id="color" name="bgColor" class="input-xlarge">
+                  <option value="black">Black</option>
+                  <option value="white">White</option>
+                </select>
+              </div>
+            </div>
+            
+            <!-- Pixel Shape -->
+            <div class="control-group">
+              <label class="control-label" for="shape">Pixel Shape</label>
+              <div class="controls">
+                <select id="shape" name="pixelShape" class="input-xlarge">
+                  <option value="square">Square</option>
+                  <option value="circle">Circle</option>
+                </select>
+              </div>
+            </div>
+            
+            
+            
+            <!-- Process -->
+            <div class="control-group">
+              <label class="control-label" for="submit"></label>
+              <div class="controls">
+                <button id="submit" name="submit" class="btn btn-primary">Pixelize</button>
+              </div>
+            </div>
+            
+            </fieldset>
         </form>
+
     </div>
 </body>
 </html>
