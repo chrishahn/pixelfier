@@ -138,8 +138,8 @@ if (($_POST['url'] != "" || !empty($_FILES['file'])) && $_POST['source'] != "") 
 
 <html>
 <head>
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <script src="/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/bootstrap.min.js"></script>
 </head>
 <style>
     body {
